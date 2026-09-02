@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ular Tangga FPB & KPK - Kelas 5 SD</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Trebuchet MS",Arial,sans-serif;background:#f7f3e8;color:#263238;min-height:100vh}
+.screen{display:none;min-height:100vh;padding:24px}
+.screen.active{display:flex;justify-content:center;align-items:center}
+.start-card,.result-card{width:min(900px,100%);background:white;border:4px solid #263238;border-radius:30px;padding:35px;text-align:center;box-shadow:10px 10px 0 #263238}
+.logo{font-size:70px}.start-card h1{font-size:42px;margin-bottom:10px}.start-card h2{font-size:24px;margin-bottom:18px}
+.description{font-size:19px;line-height:1.6;max-width:680px;margin:0 auto 25px}
+.sticker-row{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:25px 0}
+.sticker{border:3px solid #263238;border-radius:18px;padding:13px 18px;background:#fff9c4;font-size:18px;font-weight:bold;transform:rotate(-2deg)}
+.sticker:nth-child(2){background:#dcedc8;transform:rotate(2deg)}.sticker:nth-child(3){background:#bbdefb;transform:rotate(-1deg)}
+.name-input{width:min(400px,100%);padding:15px;border:3px solid #263238;border-radius:15px;font-size:20px;text-align:center;margin:10px auto 20px;display:block}
+.big-button{border:3px solid #263238;background:#ffcc80;border-radius:18px;padding:16px 35px;font-size:22px;font-weight:bold;cursor:pointer;box-shadow:5px 5px 0 #263238;transition:.15s}
+.big-button:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 #263238}.big-button:active{transform:translate(5px,5px);box-shadow:0 0}
+.game-screen{width:min(1200px,100%);margin:auto}
+.topbar{background:white;border:4px solid #263238;border-radius:20px;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px;box-shadow:5px 5px 0 #263238}
+.top-info{display:flex;gap:20px;flex-wrap:wrap;font-size:18px;font-weight:bold}.badge{background:#fff9c4;border:2px solid #263238;border-radius:12px;padding:8px 12px}
+.main-area{display:grid;grid-template-columns:1fr 390px;gap:20px}
+.board-wrap{background:white;border:4px solid #263238;border-radius:25px;padding:15px;box-shadow:7px 7px 0 #263238}
+.board{width:100%;aspect-ratio:1/1;display:grid;grid-template-columns:repeat(10,1fr);border:3px solid #263238;border-radius:15px;overflow:hidden;position:relative}
+.cell{position:relative;border:1px solid #555;display:flex;justify-content:center;align-items:center;font-size:17px;font-weight:bold;min-width:0}
+.cell:nth-child(odd){background:#fff8dc}.cell:nth-child(even){background:#e8f5e9}.cell.question-cell{background:#bbdefb}.cell.finish{background:#ffe082}
+.cell-number{position:absolute;top:3px;left:5px;font-size:12px}.cell-icon{font-size:23px}
+.player{position:absolute;z-index:20;width:34px;height:34px;border:3px solid #263238;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#ef5350;transition:all .4s ease;box-shadow:2px 3px 0 #263238}
+.player:after{content:"";position:absolute;width:9px;height:9px;background:#263238;border-radius:50%;top:7px;left:7px;box-shadow:12px 0 0 #263238}
+.player-face{position:absolute;bottom:5px;font-size:12px}
+.panel{display:flex;flex-direction:column;gap:15px}.card{background:white;border:4px solid #263238;border-radius:22px;padding:20px;box-shadow:6px 6px 0 #263238}
+.card h3{font-size:21px;margin-bottom:12px}.progress{height:18px;border:3px solid #263238;border-radius:15px;overflow:hidden;background:#eee}
+.progress-bar{height:100%;width:0%;background:#66bb6a;transition:.3s}.question-number{font-size:16px;font-weight:bold;margin-bottom:10px}
+.question{font-size:22px;line-height:1.4;font-weight:bold;margin-bottom:16px}.options{display:flex;flex-direction:column;gap:10px}
+.option{border:3px solid #263238;background:#fafafa;border-radius:14px;padding:12px;font-size:18px;font-weight:bold;cursor:pointer;text-align:left;transition:.15s}
+.option:hover{background:#e3f2fd;transform:translateX(3px)}.option.correct{background:#c8e6c9}.option.wrong{background:#ffcdd2}.option.disabled{cursor:default;pointer-events:none}
+.feedback{display:none;margin-top:14px;padding:14px;border-radius:15px;border:3px solid #263238;font-size:17px;line-height:1.45}.feedback.show{display:block}.feedback.good{background:#dcedc8}.feedback.bad{background:#ffebee}
+.next-btn{display:none;margin-top:13px;width:100%;border:3px solid #263238;border-radius:14px;padding:13px;font-size:18px;font-weight:bold;background:#90caf9;cursor:pointer}.next-btn.show{display:block}
+.dice-card{text-align:center}.dice{font-size:65px;line-height:1;margin:8px}.roll-btn{width:100%;border:3px solid #263238;border-radius:15px;background:#ffcc80;padding:13px;font-size:20px;font-weight:bold;cursor:pointer}.roll-btn:disabled{opacity:.5;cursor:not-allowed}
+.result-card{width:min(800px,100%);padding:40px}.result-emoji{font-size:75px}.result-card h1{font-size:40px;margin:12px 0}.final-score{font-size:50px;font-weight:bold;margin:15px}.stars{font-size:45px;letter-spacing:8px;margin:10px}
+.character-box{background:#fff8e1;border:3px dashed #263238;border-radius:18px;padding:18px;margin:20px auto;font-size:19px;line-height:1.5}
+.result-buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+@media(max-width:900px){.main-area{grid-template-columns:1fr}.panel{order:2}.start-card h1{font-size:32px}}
+@media(max-width:550px){.screen{padding:10px}.start-card,.result-card{padding:22px}.cell{font-size:12px}.cell-icon{font-size:17px}.player{width:27px;height:27px}.top-info{font-size:14px;gap:6px}.question{font-size:19px}.option{font-size:16px}}
+</style>
+</head>
+<body>
+
+<section id="startScreen" class="screen active">
+<div class="start-card">
+<div class="logo">🐍🎲🪜</div>
+<h1>ULAR TANGGA</h1>
+<h2>Petualangan FPB & KPK</h2>
+<p class="description">Ayo jelajahi papan permainan! Lempar dadu, maju beberapa langkah, dan selesaikan tantangan FPB dan KPK. Kumpulkan poin sebanyak-banyaknya!</p>
+<div class="sticker-row"><div class="sticker">🔢 FPB</div><div class="sticker">⭐ KPK</div><div class="sticker">🧠 Tantangan</div></div>
+<input id="playerName" class="name-input" type="text" placeholder="Tulis nama kamu..." maxlength="25">
+<button class="big-button" onclick="startGame()">🚀 MULAI PETUALANGAN</button>
+<p style="margin-top:20px;font-size:15px">Kelas 5 SD • Fase C • Matematika</p>
+</div>
+</section>
+
+<section id="gameScreen" class="screen">
+<div class="game-screen">
+<div class="topbar">
+<div><strong>🐍 Petualangan FPB & KPK</strong></div>
+<div class="top-info">
+<div class="badge">👤 <span id="displayName">Pemain</span></div>
+<div class="badge">⭐ <span id="score">0</span> poin</div>
+<div class="badge">📍 Kotak <span id="position">1</span></div>
+</div>
+</div>
+<div class="main-area">
+<div class="board-wrap"><div id="board" class="board"></div></div>
+<div class="panel">
+<div class="card dice-card">
+<h3>🎲 Lempar Dadu</h3><div id="dice" class="dice">⚀</div>
+<button id="rollBtn" class="roll-btn" onclick="rollDice()">🎲 LEMPAR DADU</button>
+<p id="diceMessage" style="margin-top:10px;font-weight:bold">Ayo mulai perjalananmu!</p>
+</div>
+<div class="card">
+<div class="question-number">Tantangan <span id="questionNumber">-</span> / 10</div>
+<div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+<div id="questionArea" style="margin-top:16px"><p class="question">Lempar dadu untuk menemukan tantangan!</p></div>
+<div id="feedback" class="feedback"></div>
+<button id="nextBtn" class="next-btn" onclick="nextQuestion()">➡️ LANJUT</button>
+</div>
+<div class="card"><h3>🌟 Sikap Hebat</h3><p id="characterText" style="line-height:1.5">Belajar dengan jujur, teliti, dan pantang menyerah!</p></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="resultScreen" class="screen">
+<div class="result-card">
+<div class="result-emoji" id="resultEmoji">🏆</div>
+<h1>Petualangan Selesai!</h1>
+<p id="resultMessage" style="font-size:21px"></p>
+<div class="final-score"><span id="finalScore">0</span> ⭐</div>
+<div class="stars" id="stars">⭐⭐⭐</div>
+<div class="character-box"><strong>🌟 Penguatan Karakter</strong><br><br>Kamu sudah berlatih menjadi siswa yang <strong>bernalar kritis, mandiri, jujur, dan pantang menyerah</strong>. Kesalahan bukan alasan untuk berhenti belajar. Terus mencoba dan berkembang!</div>
+<div class="result-buttons">
+<button class="big-button" onclick="restartGame()">🔄 MAIN LAGI</button>
+<button class="big-button" style="background:#c5e1a5" onclick="backHome()">🏠 MENU UTAMA</button>
+</div>
+</div>
+</section>
+
+<script>
+const questions=[
+{q:"Berapakah FPB dari 12 dan 18?",options:["2","3","6","9"],answer:2,feedbackCorrect:"Hebat! FPB dari 12 dan 18 adalah 6. Faktor yang sama antara 12 dan 18 adalah 1, 2, 3, dan 6. Yang terbesar adalah 6.",feedbackWrong:"Belum tepat. Ingat, FPB adalah faktor persekutuan yang paling besar. Coba periksa faktor 12 dan 18 kembali.",character:"🧠 Bernalar kritis: periksa faktor satu per satu sebelum menentukan jawaban."},
+{q:"Berapakah FPB dari 8 dan 12?",options:["2","4","6","8"],answer:1,feedbackCorrect:"Benar! Faktor yang sama dari 8 dan 12 adalah 1, 2, dan 4. Jadi FPB-nya adalah 4.",feedbackWrong:"Coba lagi! Cari faktor yang dapat membagi 8 dan 12 tanpa sisa. Pilih faktor yang paling besar.",character:"🔍 Teliti: periksa kembali setiap faktor sebelum menjawab."},
+{q:"Berapakah KPK dari 4 dan 6?",options:["8","10","12","24"],answer:2,feedbackCorrect:"Mantap! Kelipatan 4 adalah 4, 8, 12, ... dan kelipatan 6 adalah 6, 12, ... Jadi KPK-nya 12.",feedbackWrong:"Belum tepat. KPK adalah kelipatan persekutuan yang paling kecil. Coba tuliskan beberapa kelipatan 4 dan 6.",character:"📚 Mandiri: gunakan cara yang paling kamu kuasai untuk mencari KPK."},
+{q:"Berapakah KPK dari 3 dan 5?",options:["8","10","15","20"],answer:2,feedbackCorrect:"Hebat! Kelipatan 3 adalah 3, 6, 9, 12, 15. Kelipatan 5 adalah 5, 10, 15. Jadi KPK = 15.",feedbackWrong:"Coba lagi! Cari kelipatan 3 dan 5. Angka pertama yang sama adalah jawabannya.",character:"💪 Pantang menyerah: terus mencoba sampai menemukan strategi yang tepat."},
+{q:"Siti memiliki 16 permen dan 24 cokelat. Keduanya akan dibagi ke dalam beberapa kelompok dengan jumlah sama banyak. Jumlah kelompok terbanyak adalah ...",options:["4","6","8","12"],answer:2,feedbackCorrect:"Tepat! Kita mencari FPB dari 16 dan 24. FPB-nya adalah 8, jadi kelompok terbanyak adalah 8.",feedbackWrong:"Belum tepat. Karena mencari jumlah kelompok terbanyak dengan pembagian sama rata, kita menggunakan FPB.",character:"🤝 Gotong royong: pembagian yang adil membantu semua orang mendapatkan bagian yang sama."},
+{q:"Lampu A menyala setiap 4 menit. Lampu B menyala setiap 6 menit. Jika keduanya menyala bersama sekarang, keduanya akan menyala bersama lagi setelah ... menit.",options:["8","10","12","24"],answer:2,feedbackCorrect:"Benar! Kita mencari KPK dari 4 dan 6. KPK(4,6) = 12. Jadi keduanya menyala bersama lagi setelah 12 menit.",feedbackWrong:"Coba lagi! Untuk menentukan kapan dua kejadian berulang terjadi bersama lagi, gunakan KPK.",character:"⏱️ Bernalar kritis: tentukan dulu apakah masalah membutuhkan FPB atau KPK."},
+{q:"Faktor dari 15 yang benar adalah ...",options:["1, 3, 5, 15","1, 2, 5, 15","3, 5, 10, 15","1, 4, 5, 15"],answer:0,feedbackCorrect:"Bagus! 15 dapat dibagi habis oleh 1, 3, 5, dan 15. Jadi itulah faktor-faktornya.",feedbackWrong:"Belum tepat. Faktor adalah bilangan yang dapat membagi suatu bilangan sampai habis tanpa sisa.",character:"🔎 Teliti: biasakan memeriksa apakah pembagian menghasilkan sisa atau tidak."},
+{q:"Kelipatan 7 yang benar adalah ...",options:["7, 14, 21, 28","7, 13, 19, 25","1, 7, 14, 20","7, 12, 17, 22"],answer:0,feedbackCorrect:"Benar! Kelipatan 7 diperoleh dari 7×1, 7×2, 7×3, 7×4, dan seterusnya.",feedbackWrong:"Coba lagi! Kelipatan diperoleh dengan mengalikan suatu bilangan dengan 1, 2, 3, 4, dan seterusnya.",character:"📖 Mandiri: gunakan perkalian untuk menemukan pola kelipatan."},
+{q:"Berapakah FPB dari 20 dan 30?",options:["5","10","15","20"],answer:1,feedbackCorrect:"Hebat! Faktor persekutuan terbesar dari 20 dan 30 adalah 10.",feedbackWrong:"Belum tepat. Faktor yang sama antara 20 dan 30 antara lain 1, 2, 5, dan 10. Yang terbesar adalah 10.",character:"🎯 Fokus: jangan terburu-buru, cari semua faktor persekutuan terlebih dahulu."},
+{q:"Berapakah KPK dari 5 dan 10?",options:["5","10","15","20"],answer:1,feedbackCorrect:"Mantap! Karena 10 merupakan kelipatan 5 dan juga kelipatan 10, maka KPK(5,10) = 10.",feedbackWrong:"Coba lagi! Tuliskan kelipatan 5 dan 10. Cari kelipatan pertama yang sama.",character:"🌱 Bertanggung jawab: kerjakan dengan teliti dan percaya pada proses belajarmu."}
+];
+
+let playerName="Pemain",score=0,position=1,currentQuestion=-1,answered=false,questionCount=0;
+const snakes={16:6,28:12,43:24,49:35,62:40,79:58,94:72};
+const ladders={3:22,8:30,15:37,27:48,41:60,54:76,70:89};
+
+function showScreen(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active")}
+function startGame(){
+playerName=document.getElementById("playerName").value.trim()||"Pemain";score=0;position=1;currentQuestion=-1;answered=false;questionCount=0;
+document.getElementById("displayName").textContent=playerName;document.getElementById("score").textContent=score;document.getElementById("position").textContent=position;
+showScreen("gameScreen");createBoard();updatePlayer();document.getElementById("questionArea").innerHTML='<p class="question">🎲 Lempar dadu untuk memulai petualangan!</p>';
+document.getElementById("feedback").className="feedback";document.getElementById("nextBtn").className="next-btn";document.getElementById("rollBtn").disabled=false;
+}
+function createBoard(){
+const board=document.getElementById("board");board.innerHTML="";let cells=[];
+for(let row=0;row<10;row++){let nums=[];for(let col=1;col<=10;col++)nums.push(row*10+col);if(row%2===1)nums.reverse();cells.push(...nums)}cells.reverse();
+cells.forEach(number=>{const cell=document.createElement("div");cell.className="cell";if(number%10===0)cell.classList.add("finish");if([5,10,20,30,40,50,60,70,80,90].includes(number))cell.classList.add("question-cell");cell.innerHTML=`<span class="cell-number">${number}</span>`;if(snakes[number])cell.innerHTML+=`<span class="cell-icon">🐍</span>`;if(ladders[number])cell.innerHTML+=`<span class="cell-icon">🪜</span>`;if(number===100)cell.innerHTML+=`<span class="cell-icon">🏆</span>`;cell.dataset.number=number;board.appendChild(cell)});
+const player=document.createElement("div");player.id="player";player.className="player";player.innerHTML=`<span class="player-face">🙂</span>`;board.appendChild(player);
+}
+function rollDice(){
+if(answered)return;const rollBtn=document.getElementById("rollBtn");rollBtn.disabled=true;const faces=["⚀","⚁","⚂","⚃","⚄","⚅"];let count=0;
+const animation=setInterval(()=>{document.getElementById("dice").textContent=faces[Math.floor(Math.random()*6)];count++;if(count>=10){clearInterval(animation);const result=Math.floor(Math.random()*6)+1;document.getElementById("dice").textContent=faces[result-1];movePlayer(result)}},80);
+}
+function movePlayer(steps){
+let target=Math.min(100,position+steps);position=target;document.getElementById("position").textContent=position;updatePlayer();document.getElementById("diceMessage").textContent=`Kamu maju ${steps} langkah!`;
+setTimeout(()=>{if(snakes[position]){const old=position;position=snakes[position];document.getElementById("position").textContent=position;updatePlayer();document.getElementById("diceMessage").textContent=`🐍 Ups! Turun dari ${old} ke ${position}.`}else if(ladders[position]){const old=position;position=ladders[position];document.getElementById("position").textContent=position;updatePlayer();document.getElementById("diceMessage").textContent=`🪜 Hebat! Naik dari ${old} ke ${position}!`}setTimeout(showQuestion,500)},500);
+}
+function updatePlayer(){
+const board=document.getElementById("board"),cells=[...board.querySelectorAll(".cell")],target=cells.find(c=>Number(c.dataset.number)===position),player=document.getElementById("player");if(!target)return;
+const br=board.getBoundingClientRect(),tr=target.getBoundingClientRect();player.style.left=(tr.left-br.left+tr.width/2-17)+"px";player.style.top=(tr.top-br.top+tr.height/2-17)+"px";
+}
+function showQuestion(){
+if(questionCount>=10){finishGame();return}currentQuestion=questionCount;const data=questions[currentQuestion];
+document.getElementById("questionNumber").textContent=currentQuestion+1;document.getElementById("progressBar").style.width=((currentQuestion)/10*100)+"%";
+let html=`<p class="question">${data.q}</p><div class="options">`;data.options.forEach((o,i)=>html+=`<button class="option" onclick="answerQuestion(${i})">${String.fromCharCode(65+i)}. ${o}</button>`);html+=`</div>`;
+document.getElementById("questionArea").innerHTML=html;document.getElementById("feedback").className="feedback";document.getElementById("nextBtn").className="next-btn";answered=false;
+}
+function answerQuestion(choice){
+if(answered)return;answered=true;const data=questions[currentQuestion],buttons=document.querySelectorAll(".option");buttons.forEach((b,i)=>{b.classList.add("disabled");if(i===data.answer)b.classList.add("correct")});
+const feedback=document.getElementById("feedback");
+if(choice===data.answer){score+=100;document.getElementById("score").textContent=score;feedback.className="feedback show good";feedback.innerHTML=`🎉 <strong>Hebat, ${playerName}!</strong><br>${data.feedbackCorrect}`}
+else{score=Math.max(0,score-20);document.getElementById("score").textContent=score;buttons[choice].classList.add("wrong");feedback.className="feedback show bad";feedback.innerHTML=`💡 <strong>Coba lagi, kamu pasti bisa!</strong><br>${data.feedbackWrong}`}
+document.getElementById("characterText").textContent=data.character;document.getElementById("nextBtn").className="next-btn show";
+}
+function nextQuestion(){
+questionCount++;if(questionCount>=10){finishGame();return}document.getElementById("rollBtn").disabled=false;document.getElementById("diceMessage").textContent="🎲 Lempar dadu untuk mencari tantangan berikutnya!";
+document.getElementById("questionArea").innerHTML='<p class="question">🎲 Lempar dadu untuk melanjutkan!</p>';document.getElementById("feedback").className="feedback";document.getElementById("nextBtn").className="next-btn";document.getElementById("questionNumber").textContent="-";
+}
+function finishGame(){
+document.getElementById("finalScore").textContent=score;let stars="";
+if(score>=900){stars="⭐⭐⭐";document.getElementById("resultEmoji").textContent="🏆";document.getElementById("resultMessage").textContent=`Luar biasa, ${playerName}! Kamu adalah Master FPB & KPK!`}
+else if(score>=600){stars="⭐⭐";document.getElementById("resultEmoji").textContent="🌟";document.getElementById("resultMessage").textContent=`Hebat, ${playerName}! Pemahamanmu sudah bagus. Terus berlatih!`}
+else{stars="⭐";document.getElementById("resultEmoji").textContent="💪";document.getElementById("resultMessage").textContent=`Semangat, ${playerName}! Jangan menyerah. Coba lagi dan kamu pasti bisa!`}
+document.getElementById("stars").textContent=stars;showScreen("resultScreen");
+}
+function restartGame(){startGame()}
+function backHome(){showScreen("startScreen")}
+window.addEventListener("resize",()=>{if(document.getElementById("gameScreen").classList.contains("active"))updatePlayer()});
+</script>
+</body>
+</html>
